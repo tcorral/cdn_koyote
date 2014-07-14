@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Todo list</title>
+    <link href="style.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<h1>Todos</h1>
+<form id="todo-form" class="todo-form">
+</form>
+
+<script type="text/javascript" src="../base/koyote.dev.js"></script>
+<script type="text/javascript" src="../component/koyote-bus.dev.js"></script>
+<script type="text/javascript" src="../component/koyote-component.dev.js"></script>
+<script type="text/javascript" src="../component/koyote-widget.dev.js"></script>
+<script type="text/javascript" src="../todo/koyote-todo-list.dev.js"></script>
+<script type="text/javascript" src="../todo/koyote-todo-item.dev.js"></script>
+<script type="text/javascript" src="../todo/koyote-todo-storage.dev.js"></script>
+<script type="text/javascript" src="../todo/koyote-todo-add.dev.js"></script>
+<script type="text/javascript">
+    ( function( win, doc, app )
+    {
+        'use strict';
+
+        var form = doc.getElementById( 'todo-form' ),
+                todoList = app.create( 'TodoList', form ),
+                addInput = app.create( 'TodoAdd', form ),
+                storage = app.create( 'TodoStorage' );
+
+        addInput.render();
+        todoList.add( storage ).render();
+
+    }( window, document, Koyote ) );
+</script>
+</body>
+</html>
