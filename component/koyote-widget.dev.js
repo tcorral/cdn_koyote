@@ -148,6 +148,7 @@
         },
         '@domEvents': {},
         '@destroy': function () {
+          this.getParent().remove(this);
           this.unbindEvents();
           this.getContainer().removeChild(this.element);
           this.element = null;

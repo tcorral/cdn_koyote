@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en" data-framework="koyote">
+<head>
+    <meta charset="utf-8">
+    <title>KoyoteJS • TodoMVC</title>
+    <link rel="stylesheet" href="../todomvc-common/base.css">
+</head>
+<body>
+<section id="todoapp">
+    <header id="header">
+        <h1>todos</h1>
+        <input id="new-todo" placeholder="What needs to be done?" autofocus>
+    </header>
+    <section id="main">
+        <input id="toggle-all" type="checkbox">
+        <label for="toggle-all">Mark all as complete</label>
+        <ul id="todo-list"></ul>
+    </section>
+    <footer id="footer">
+        <span id="todo-count"></span>
+        <ul id="filters">
+            <li>
+                <a href="#/" class="selected">All</a>
+            </li>
+            <li>
+                <a href="#/active">Active</a>
+            </li>
+            <li>
+                <a href="#/completed">Completed</a>
+            </li>
+        </ul>
+        <button id="clear-completed">Clear completed</button>
+    </footer>
+</section>
+<footer id="info">
+    <p>Double-click to edit a todo</p>
+
+    <p>Created by
+        <a href="http://twitter.com/amischol">Tom&aacute;s Corral</a>
+    </p>
+
+    <p>Part of
+        <a href="http://todomvc.com">TodoMVC</a>
+    </p>
+</footer>
+<script src="../todomvc-common/base.js"></script>
+<script src="../base/koyote.dev.js"></script>
+<script src="../component/koyote-bus.dev.js"></script>
+<script src="../component/koyote-component.dev.js"></script>
+<script src="../component/koyote-widget.dev.js"></script>
+<script src="todo/koyote-todo-add.dev.js"></script>
+<script src="todo/koyote-todo-list.dev.js"></script>
+<script src="todo/koyote-todo-item.dev.js"></script>
+<script type="text/javascript">
+    ( function (win, doc, app) {
+        'use strict';
+
+        var inputAdd = document.getElementById('new-todo');
+        var list = document.getElementById('todo-list');
+        var addInput = app.create('TodoAdd', inputAdd);
+        var todoList = app.create('TodoList', list);
+        addInput.render();
+        todoList.render();
+//        var form = doc.getElementById('todo-form')
+//                , todoList = app.create('TodoList', form)
+//                , addInput = app.create('TodoAdd', form)
+//                , storage = app.create('TodoStorage');
+//
+//        addInput.render();
+//        todoList.add(storage).render();
+
+    }(window, document, Koyote) );
+</script>
+<!--<script src="js/helpers.js"></script>-->
+<!--<script src="js/store.js"></script>-->
+<!--<script src="js/model.js"></script>-->
+<!--<script src="js/template.js"></script>-->
+<!--<script src="js/view.js"></script>-->
+<!--<script src="js/controller.js"></script>-->
+<!--<script src="js/app.js"></script>-->
+</body>
+</html>
