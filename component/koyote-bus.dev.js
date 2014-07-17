@@ -89,7 +89,7 @@
   }
 
   /**
-   * Removes the subscribers and returns the number of removed items.
+   * Removes the subscribers and returns the number of removed todos.
    * @param {Array} subscribers
    * @param {Object} subscriber
    * @returns {number}
@@ -252,7 +252,7 @@
 
     /**
      * Method to unsubscribe a subscriber from a channel and event type.
-     * It iterates in reverse order to avoid messing with array length when removing items.
+     * It iterates in reverse order to avoid messing with array length when removing todos.
      * @param {String} channelId
      * @param {String} eventType
      * @param {Object} subscriber
