@@ -1,58 +1,48 @@
-( function( win, koyote )
-{
-	'use strict';
+( function (win, koyote) {
+  'use strict';
 
-	var localStorage = win.localStorage
+  var localStorage = win.localStorage
     , JSON = win.JSON;
 
   function adapter(koyote, bus, component) {
     return (koyote.TodoStorage = component.mix(
       {
-        constructor: function()
-        {
-          koyote.callMethod( 'Component.constructor', this, [ 'todo-storage' ] );
+        constructor: function () {
+          koyote.callMethod('Component.constructor', this, [ 'todo-storage' ]);
 
           this.restore();
 
-          bus.subscribe( this );
-          bus.publish( 'todos', 'list:restore', this.todos );
+          bus.subscribe(this);
+          bus.publish('todos', 'list:restore', this.todos);
         },
-        '@events':
-        {
-          'todos':
-          {
-            'todo:update': function( data )
-            {
-              data.todos.forEach( this.save.bind( this ) );
+        '@events': {
+          'todos': {
+            'todo:update': function (data) {
+              data.todos.forEach(this.save.bind(this));
             },
-            'todo:add': function( data )
-            {
-              data.todos.forEach( this.save.bind( this ) );
+            'todo:add': function (data) {
+              data.todos.forEach(this.save.bind(this));
             },
-            'todo:remove': function ( data )
-            {
-              this.remove( data.item );
+            'todo:remove': function (data) {
+              this.remove(data.item);
             },
-            'todo:getAll': function (data){
+            'todo:getAll': function (data) {
               data.todos = this.todos;
             }
           }
         },
-        '@remove': function ( todoData )
-        {
+        '@remove': function (todoData) {
           delete this.todos[ todoData.id ];
-          localStorage.setItem( 'todos', JSON.stringify( this.todos ) );
+          localStorage.setItem('todos', JSON.stringify(this.todos));
         },
-        '@save': function( todoData )
-        {
+        '@save': function (todoData) {
           this.todos[ todoData.id ] = todoData;
-          localStorage.setItem( 'todos', JSON.stringify( this.todos ) );
+          localStorage.setItem('todos', JSON.stringify(this.todos));
         },
-        '@restore': function()
-        {
-          this.todos = JSON.parse( localStorage.getItem( 'todos' ) ) || {};
+        '@restore': function () {
+          this.todos = JSON.parse(localStorage.getItem('todos')) || {};
         }
-      } ));
+      }));
   }
 
 
@@ -61,4 +51,4 @@
   } else {
     adapter(koyote, koyote.Bus, koyote.Component);
   }
-}( window, Koyote ) );
+}(window, Koyote) );

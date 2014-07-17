@@ -1,26 +1,21 @@
 (function (koyote) {
   'use strict';
-  function adapter(koyote, bus, widget){
+  function adapter(koyote, bus, widget) {
     return (koyote.TodoAdd = widget.mix(
       {
-        constructor: function( element )
-        {
-          koyote.callMethod( 'Widget.constructor', this, [ null, 'todo-add' ] );
+        constructor: function (element) {
+          koyote.callMethod('Widget.constructor', this, [ null, 'todo-add' ]);
           this.element = element;
         },
         '@template': '',
-        '@render': function()
-        {
+        '@render': function () {
           this.bindEvents();
         },
-        '@domEvents':
-        {
-          'keydown': function( event )
-          {
+        '@domEvents': {
+          'keydown': function (event) {
             var keyCode = event.keyCode;
 
-            switch ( keyCode )
-            {
+            switch (keyCode) {
               case 27:
                 this.value = '';
                 this.blur();
@@ -32,12 +27,11 @@
 
                 this.value = this.value.trim();
 
-                if ( this.value.length )
-                {
-                  bus.publish( 'todos', 'list:add',
+                if (this.value.length) {
+                  bus.publish('todos', 'list:add',
                     {
                       item: [this.value]
-                    } );
+                    });
                 }
 
                 this.value = '';
@@ -48,7 +42,7 @@
             }
           }
         }
-      } ));
+      }));
   }
 
   if (typeof define !== 'undefined') {

@@ -3,8 +3,8 @@
 
   var _toString = Object.prototype.toString,
     _isFunction = function (obj) {
-    return _toString.call(obj) === '[object Function]';
-  };
+      return _toString.call(obj) === '[object Function]';
+    };
 
   function adapter(koyote, bus, widget) {
     return (koyote.TodoList = widget.mix(
@@ -24,8 +24,8 @@
         },
         '@addTodos': function (item) {
           var storeData = {
-              todos: []
-            };
+            todos: []
+          };
 
           var todo = koyote.create('TodoItem',
             {

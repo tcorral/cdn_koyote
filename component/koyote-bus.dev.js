@@ -32,8 +32,7 @@
   function _isEvent(obj) {
     try {
       return _isInstanceOf(obj, Event);
-    }
-    catch (error) {
+    } catch (error) {
       // Duck typing detection (If it sounds like a duck and it moves like a duck, it's a duck)
       if (obj.altKey !== und && ( obj.srcElement || obj.target )) {
         return true;
