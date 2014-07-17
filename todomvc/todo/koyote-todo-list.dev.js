@@ -14,7 +14,6 @@
           bus.subscribe(this);
           this.element = element;
         },
-        '@template': '',
         '@render': function () {
           this.bindEvents();
           this.getChildren().forEach(function (child) {

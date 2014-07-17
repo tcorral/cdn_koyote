@@ -4,73 +4,149 @@
   function adapter(koyote, bus, widget){
     return (koyote.TodoStats = widget.mix(
       {
-        constructor: function( data )
+        constructor: function( element )
         {
-          koyote.callMethod( 'Widget.constructor', this, [ null, 'todo-stats', data.id ] );
-          this.remaining = data.remaining;
-          this.completed = data.completed;
+          koyote.callMethod( 'Widget.constructor', this, [ null, 'todo-stats' ] );
+          this.element = element;
+          this.selected = element.querySelector('.selected');
+          this.setData();
+          this.filter = 'all';
+          bus.subscribe( this );
         },
-        '@template': '<span id="todo-count"><strong>{{ remaining }}</strong> {{ items }} left</span><ul id="filters"><li><a class="selected" href="#/">All</a></li><li><a href="#/active">Active</a></li><li><a href="#/completed">Completed</a></li></ul>{{ completed }}<button id="clear-completed" class="{{clear_completed}}">Clear completed ({{ completed }})</button>',
+        '@filtering': {
+          'all': function () {
+            var key;
+            var item;
+            this.setData();
+            for(key in this.remaining){
+              if(this.remaining.hasOwnProperty(key)) {
+                item = this.remaining[key];
+                bus.publish('todos', 'todo:show', item);
+              }
+            }
+            for(key in this.completed){
+              if(this.completed.hasOwnProperty(key)) {
+                item = this.completed[key];
+                bus.publish('todos', 'todo:show', item);
+              }
+            }
+          },
+          'active': function () {
+            var key;
+            var item;
+            this.setData();
+            for(key in this.remaining){
+              if(this.remaining.hasOwnProperty(key)) {
+                item = this.remaining[key];
+                bus.publish('todos', 'todo:show', item);
+              }
+            }
+            for(key in this.completed){
+              if(this.completed.hasOwnProperty(key)) {
+                item = this.completed[key];
+                bus.publish('todos', 'todo:hide', item);
+              }
+            }
+          },
+          'completed': function () {
+            var key;
+            var item;
+            this.setData();
+            for(key in this.remaining){
+              if(this.remaining.hasOwnProperty(key)) {
+                item = this.remaining[key];
+                bus.publish('todos', 'todo:hide', item);
+              }
+            }
+            for(key in this.completed){
+              if(this.completed.hasOwnProperty(key)) {
+                item = this.completed[key];
+                bus.publish('todos', 'todo:show', item);
+              }
+            }
+          }
+        },
+        '@toggle': function (element) {
+          if(element){
+            this.selected.classList.remove('selected');
+            this.selected = element;
+            this.selected.classList.add('selected');
+          }
+          this.filtering[this.filter].call(this);
+        },
+        '@setData': function () {
+          this.setRemaining();
+          this.setCompleted();
+        },
+        '@setRemaining': function () {
+          var id;
+          var todo;
+          this.remaining = {};
+          bus.publish('todos', 'todo:getAll', this);
+          for(id in this.todos){
+            if(this.todos.hasOwnProperty(id)){
+              todo = this.todos[id];
+              if(todo.checked === false){
+                this.remaining[id] = todo;
+              }
+            }
+          }
+        },
+        '@setCompleted': function () {
+          var id;
+          var todo;
+          this.completed = {};
+          bus.publish('todos', 'todo:getAll', this);
+          for(id in this.todos){
+            if(this.todos.hasOwnProperty(id)){
+              todo = this.todos[id];
+              if(todo.checked === true){
+                this.completed[id] = todo;
+              }
+            }
+          }
+        },
+        '@template': '',
         '@render': function()
         {
-          var checkedAttr = '';
-          var items = 'item';
-          var clear_completed = 'hidden';
-          if(this.remaining > 1) {
-            items = 'items';
-          }
-
-          if(this.completed){
-            clear_completed = '';
-          }
-
-          koyote.callMethod( 'Widget.render', this, [
-            {
-              id: this.id,
-              remaining: this.remaining,
-              items: items,
-              completed: this.completed,
-              clear_completed: clear_completed
-            } ] );
+          this.bindEvents();
         },
-        update: function( todoItem, todoElement )
-        {
-          var text = todoElement.querySelector( '.todo-label' ).innerHTML,
-            checked = !!todoElement.querySelector( '.todo-check' ).checked;
-
-          todoItem.text = text;
-          todoItem.checked = checked;
-
-          bus.publish( 'todos', 'todo:update',
-            {
-              todos: [
-                {
-                  id: todoElement.id,
-                  text: text,
-                  checked: checked
-                } ]
-            } );
-        },
-        '@domEvents':
-        {
-          '.todo-check:change': function( event, todoItem )
-          {
-            var todoElement = this.parentNode;
-            todoElement.classList.toggle( 'todo-done' );
-            koyote.TodoItem.update( todoItem, todoElement );
-          },
-          '.todo-label:input': function( event, todoItem )
-          {
-            koyote.TodoItem.update( todoItem, this.parentNode );
-          },
-          '.todo-label:keypress': function( event )
-          {
-            if ( [ 13, 27 ].indexOf( event.keyCode ) > -1 )
-            {
-              event.preventDefault();
-              this.blur();
-              return;
+        '@events': {
+          'todos': {
+            'todo:update': function () {
+              this.setData();
+              this.filtering[this.filter].call(this);
+            },
+            'list:add': function () {
+              this.filtering[this.filter].call(this);
+            },
+            'filter:refresh': function () {
+              this.filtering[this.filter].call(this);
+            },
+            'filter:get': function (data){
+              data.filter = this.filter;
+            },
+            'filter:toggle': function (data) {
+              this.filter = data.filter || this.filter;
+              this.toggle(data.element);
             }
+          }
+        },
+        '@domEvents': {
+          'a[href="#/"]:click': function (event) {
+            bus.publish('todos', 'filter:toggle', { element: this, filter: 'all' });
+            event.preventDefault();
+          },
+          'a[href="#/active"]:click': function (event) {
+            bus.publish('todos', 'filter:toggle', { element: this, filter: 'active' });
+            event.preventDefault();
+          },
+          'a[href="#/completed"]:click': function (event) {
+            bus.publish('todos', 'filter:toggle', { element: this, filter: 'completed' });
+            event.preventDefault();
+          },
+          '#clear-completed:click': function (event){
+            event.preventDefault();
           }
         }
       } ));

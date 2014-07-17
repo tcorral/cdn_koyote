@@ -3,27 +3,7 @@
 	'use strict';
 
 	var localStorage = win.localStorage
-    , JSON = win.JSON
-    , _defaultTodos = {
-      'go-running':
-      {
-        id: 'go-running',
-        text: 'Go running (default)',
-        checked: false
-      },
-      'drink':
-      {
-        id: 'drink',
-        text: 'Drink (default)',
-        checked: false
-      },
-      'sleep':
-      {
-        id: 'sleep',
-        text: 'Sleep (default)',
-        checked: false
-      }
-    };
+    , JSON = win.JSON;
 
   function adapter(koyote, bus, component) {
     return (koyote.TodoStorage = component.mix(
@@ -32,7 +12,6 @@
         {
           koyote.callMethod( 'Component.constructor', this, [ 'todo-storage' ] );
 
-          this.todos = {};
           this.restore();
 
           bus.subscribe( this );
@@ -49,8 +28,20 @@
             'todo:add': function( data )
             {
               data.todos.forEach( this.save.bind( this ) );
+            },
+            'todo:remove': function ( data )
+            {
+              this.remove( data.item );
+            },
+            'todo:getAll': function (data){
+              data.todos = this.todos;
             }
           }
+        },
+        '@remove': function ( todoData )
+        {
+          delete this.todos[ todoData.id ];
+          localStorage.setItem( 'todos', JSON.stringify( this.todos ) );
         },
         '@save': function( todoData )
         {
@@ -59,7 +50,7 @@
         },
         '@restore': function()
         {
-          this.todos = JSON.parse( localStorage.getItem( 'todos' ) ) || _defaultTodos;
+          this.todos = JSON.parse( localStorage.getItem( 'todos' ) ) || {};
         }
       } ));
   }
