@@ -143,6 +143,7 @@
           event.preventDefault();
         },
         '#clear-completed:click': function (event) {
+          bus.publish('todos', 'todo:complete', this);
           event.preventDefault();
         }
       }
