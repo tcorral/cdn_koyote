@@ -56,7 +56,6 @@
             },
             'todo:complete': function (item){
               var checkbox = this.element.querySelector('.toggle');
-              console.log(checkbox);
               bus.publish('todos', 'todo:update',
                 {
                   todos: [
@@ -69,7 +68,6 @@
                 });
               checkbox.removeAttribute('checked');
               checkbox.checked = false;
-              console.log('todo-complete');
             }
           }
         },
